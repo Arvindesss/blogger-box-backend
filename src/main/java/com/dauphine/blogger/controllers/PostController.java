@@ -41,7 +41,7 @@ public class PostController {
         return;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deletePost(@PathVariable int id){
         return;
     }
