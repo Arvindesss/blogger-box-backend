@@ -2,6 +2,7 @@ package com.dauphine.blogger.controllers;
 
 
 import com.dauphine.blogger.controllers.requests.ElementRequest;
+import com.dauphine.blogger.services.PostService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/posts")
 public class PostController {
+
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping("/")
     public List<String> getAllPostsByCreationDate(@RequestParam LocalDateTime creationDate){
