@@ -1,14 +1,12 @@
 package com.dauphine.blogger.controllers;
 
 
-import com.dauphine.blogger.controllers.requests.ElementRequest;
+import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.services.PostService;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -22,27 +20,27 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public List<String> getAllPostsByCreationDate(@RequestParam LocalDateTime creationDate){
-        return new ArrayList<>();
+    public List<Post> getAllPosts(){
+        return postService.getAll();
     }
 
     @GetMapping("/{categoryId}")
-    public List<String> getPostById(@PathVariable int categoryId){
-        return new ArrayList<>();
+    public List<Post> getPostsByCategoryId(@PathVariable UUID categoryId){
+        return postService.getAllByCategoryId(categoryId);
     }
 
     @PostMapping("/")
-    public void createPost(@RequestBody ElementRequest elementRequest){
-        return;
+    public Post createPost(@RequestBody String title, @RequestBody String content, @RequestBody UUID categoryId){
+        return postService.create(title,content,categoryId);
     }
 
-    @PatchMapping("/")
-    public void updatePostName(@RequestParam int id, @RequestParam String name){
-        return;
+    @PutMapping("/{id}")
+    public Post updatePost(@PathVariable UUID id, @RequestBody String title, @RequestBody String content){
+        return postService.update(id,title,content);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable int id){
-        return;
+    public UUID deletePost(@PathVariable UUID id){
+        return postService.deleteById(id)?id:null;
     }
 }

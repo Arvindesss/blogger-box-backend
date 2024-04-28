@@ -1,36 +1,67 @@
 package com.dauphine.blogger.services.impl;
 
-import com.dauphine.blogger.controllers.requests.ElementRequest;
+import com.dauphine.blogger.models.Category;
+import com.dauphine.blogger.models.Post;
+import com.dauphine.blogger.repository.CategoryRepository;
+import com.dauphine.blogger.repository.PostRepository;
 import com.dauphine.blogger.services.PostService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PostServiceImpl implements PostService {
+
+    private final PostRepository postRepository;
+
+    private final CategoryRepository categoryRepository;
+
+    public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository) {
+        this.postRepository = postRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
     @Override
-    public List<String> getAllPostsByCreationDate(LocalDateTime creationDate) {
+    public List<Post> getAllByCategoryId(UUID categoryId) {
+        return postRepository.findAllByCategoryId(categoryId);
+    }
+
+    @Override
+    public List<Post> getAll() {
+        return postRepository.findAll();
+    }
+
+    @Override
+    public Post getById(UUID id) {
+        return postRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Post create(String title, String content, UUID categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        if(category.isPresent()) {
+            Post post = new Post(title, content, category.get());
+            return postRepository.save(post);
+        }
         return null;
     }
 
     @Override
-    public List<String> getPostById(int categoryId) {
-        return null;
+    public Post update(UUID id, String title, String content) {
+        Post post = getById(id);
+        if(post == null){
+            return null;
+        }
+        post.setTitle(title);
+        post.setContent(content);
+        return postRepository.save(post);
     }
 
     @Override
-    public void createPost(ElementRequest elementRequest) {
-
-    }
-
-    @Override
-    public void updatePostName(int id, String name) {
-
-    }
-
-    @Override
-    public void deletePost(int id) {
-
+    public boolean deleteById(UUID id) {
+        postRepository.deleteById(id);
+        return true;
     }
 }
