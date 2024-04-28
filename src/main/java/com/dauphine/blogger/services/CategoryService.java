@@ -1,25 +1,19 @@
 package com.dauphine.blogger.services;
 
-import com.dauphine.blogger.controllers.requests.ElementRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
+import com.dauphine.blogger.models.Category;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public interface CategoryService {
 
-    @GetMapping("/")
-    public List<String> getAllCategories();
+    List<Category> getAll();
 
-    @GetMapping("/{id}")
-    public String getCategoryById(@PathVariable int id);
-    @PostMapping("/")
-    public void createCategory(@RequestBody ElementRequest elementRequest);
+    Category getById(UUID id);
 
-    @PatchMapping("/")
-    public void updateCategoryName(@RequestParam int id, @RequestParam String name);
+    Category create(String name);
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteCategory(@PathVariable int id);
+    Category updateName(UUID id, String name);
+
+    boolean deleteById(UUID id);
 }
