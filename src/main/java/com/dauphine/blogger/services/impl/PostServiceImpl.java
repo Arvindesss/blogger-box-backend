@@ -34,6 +34,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> getAllByTitleOrContent(String titleOrContent) {
+        return postRepository.findAllByTitleOrContent(titleOrContent,titleOrContent);
+    }
+
+    @Override
     public Post getById(UUID id) {
         return postRepository.findById(id).orElse(null);
     }
@@ -45,7 +50,7 @@ public class PostServiceImpl implements PostService {
             Post post = new Post(title, content, category.get());
             return postRepository.save(post);
         }
-        return null;
+        else throw new RuntimeException("Category " + categoryId + "not found");
     }
 
     @Override

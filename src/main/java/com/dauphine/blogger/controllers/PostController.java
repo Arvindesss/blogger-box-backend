@@ -1,6 +1,8 @@
 package com.dauphine.blogger.controllers;
 
 
+import com.dauphine.blogger.controllers.requestbody.CreatePostRequestBody;
+import com.dauphine.blogger.controllers.requestbody.UpdatePostRequestBody;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.services.PostService;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,9 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping("/")
-    public List<Post> getAllPosts(){
-        return postService.getAll();
+    @GetMapping("")
+    public List<Post> getAllPosts(@RequestParam(required = false) String value){
+        return value == null || value.isBlank() ? postService.getAll() : postService.getAllByTitleOrContent(value) ;
     }
 
     @GetMapping("/{categoryId}")
@@ -29,14 +31,14 @@ public class PostController {
         return postService.getAllByCategoryId(categoryId);
     }
 
-    @PostMapping("/")
-    public Post createPost(@RequestBody String title, @RequestBody String content, @RequestBody UUID categoryId){
-        return postService.create(title,content,categoryId);
+    @PostMapping("")
+    public Post createPost(@RequestBody CreatePostRequestBody createPostRequestBody){
+        return postService.create(createPostRequestBody.title(), createPostRequestBody.content(), createPostRequestBody.categoryId());
     }
 
     @PutMapping("/{id}")
-    public Post updatePost(@PathVariable UUID id, @RequestBody String title, @RequestBody String content){
-        return postService.update(id,title,content);
+    public Post updatePost(@PathVariable UUID id, UpdatePostRequestBody updatePostRequestBody){
+        return postService.update(id, updatePostRequestBody.title(), updatePostRequestBody.content());
     }
 
     @DeleteMapping("/{id}")

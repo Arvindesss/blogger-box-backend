@@ -7,5 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostRepository extends JpaRepository<Post, UUID> {
+
     List<Post> findAllByCategoryId(UUID uuid);
+
+    List<Post> findAllByTitleOrContent(String title, String content);
 }

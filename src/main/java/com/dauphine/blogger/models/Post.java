@@ -11,10 +11,10 @@ import java.util.UUID;
 @Table(name = "post")
 public class Post {
 
-
     @Id
     @Column(name = "id")
     private UUID id;
+
     @Column(name = "title")
     private String title;
 

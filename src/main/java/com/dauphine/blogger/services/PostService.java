@@ -11,6 +11,8 @@ public interface PostService {
 
     List<Post> getAll();
 
+    List<Post> getAllByTitleOrContent(String titleOrContent);
+
     Post getById(UUID id);
 
     Post create(String title, String content, UUID categoryId);

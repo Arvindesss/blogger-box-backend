@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
-    List<Category> findAllByName(String name);
+    List<Category> findByName(String name);
 }
