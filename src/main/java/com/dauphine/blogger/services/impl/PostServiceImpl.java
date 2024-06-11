@@ -4,7 +4,10 @@ import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.repository.CategoryRepository;
 import com.dauphine.blogger.repository.PostRepository;
+import com.dauphine.blogger.services.CategoryService;
 import com.dauphine.blogger.services.PostService;
+import com.dauphine.blogger.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.blogger.services.exceptions.PostNotFoundByIdException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,15 +19,16 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository) {
+    public PostServiceImpl(PostRepository postRepository, CategoryService categoryService) {
         this.postRepository = postRepository;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
     @Override
-    public List<Post> getAllByCategoryId(UUID categoryId) {
+    public List<Post> getAllByCategoryId(UUID categoryId) throws CategoryNotFoundByIdException {
+        categoryService.getById(categoryId);
         return postRepository.findAllByCategoryId(categoryId);
     }
 
@@ -39,34 +43,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getById(UUID id) {
-        return postRepository.findById(id).orElse(null);
+    public Post getById(UUID id) throws PostNotFoundByIdException {
+        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundByIdException("Post with id "
+                + id + " not found"));
     }
 
     @Override
-    public Post create(String title, String content, UUID categoryId) {
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        if(category.isPresent()) {
-            Post post = new Post(title, content, category.get());
-            return postRepository.save(post);
-        }
-        else throw new RuntimeException("Category " + categoryId + "not found");
+    public Post create(String title, String content, UUID categoryId) throws CategoryNotFoundByIdException {
+        Category category = categoryService.getById(categoryId);
+        Post post = new Post(title, content, category);
+        return postRepository.save(post);
     }
 
     @Override
-    public Post update(UUID id, String title, String content) {
+    public Post update(UUID id, String title, String content) throws PostNotFoundByIdException {
         Post post = getById(id);
-        if(post == null){
-            return null;
-        }
         post.setTitle(title);
         post.setContent(content);
         return postRepository.save(post);
     }
 
     @Override
-    public boolean deleteById(UUID id) {
+    public void deleteById(UUID id) throws PostNotFoundByIdException {
+        getById(id);
         postRepository.deleteById(id);
-        return true;
     }
 }
