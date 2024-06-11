@@ -56,10 +56,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post update(UUID id, String title, String content) throws PostNotFoundByIdException {
+    public Post update(UUID id, String title, String content, UUID categoryId)
+            throws PostNotFoundByIdException, CategoryNotFoundByIdException {
+        Category category = categoryService.getById(categoryId);
         Post post = getById(id);
         post.setTitle(title);
         post.setContent(content);
+        post.setCategory(category);
         return postRepository.save(post);
     }
 

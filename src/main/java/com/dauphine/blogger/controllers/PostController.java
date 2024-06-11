@@ -1,8 +1,7 @@
 package com.dauphine.blogger.controllers;
 
 
-import com.dauphine.blogger.controllers.requestbody.CreatePostRequestBody;
-import com.dauphine.blogger.controllers.requestbody.UpdatePostRequestBody;
+import com.dauphine.blogger.controllers.requestbody.PostRequestBody;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.services.PostService;
 import com.dauphine.blogger.services.exceptions.CategoryNotFoundByIdException;
@@ -40,19 +39,19 @@ public class PostController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Post> createPost(@RequestBody CreatePostRequestBody createPostRequestBody)
+    public ResponseEntity<Post> createPost(@RequestBody PostRequestBody postRequestBody)
             throws CategoryNotFoundByIdException {
-        Post post = postService.create(createPostRequestBody.title(), createPostRequestBody.content(),
-                createPostRequestBody.categoryId());
+        Post post = postService.create(postRequestBody.title(), postRequestBody.content(),
+                postRequestBody.categoryId());
         return ResponseEntity
                 .created(URI.create("v1/posts" + post.getId()))
                 .body(post);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable UUID id, UpdatePostRequestBody updatePostRequestBody)
-            throws PostNotFoundByIdException {
-        Post post = postService.update(id, updatePostRequestBody.title(), updatePostRequestBody.content());
+    public ResponseEntity<Post> updatePost(@PathVariable UUID id, PostRequestBody postRequestBody)
+            throws PostNotFoundByIdException, CategoryNotFoundByIdException {
+        Post post = postService.update(id, postRequestBody.title(), postRequestBody.content(), postRequestBody.categoryId());
         return ResponseEntity
                 .created(URI.create("v1/posts" + post.getId()))
                 .body(post);

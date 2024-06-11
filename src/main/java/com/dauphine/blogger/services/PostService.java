@@ -19,7 +19,7 @@ public interface PostService {
 
     Post create(String title, String content, UUID categoryId) throws CategoryNotFoundByIdException;
 
-    Post update(UUID id, String title, String content) throws PostNotFoundByIdException;
+    Post update(UUID id, String title, String content, UUID categoryId) throws PostNotFoundByIdException, CategoryNotFoundByIdException;
 
     void deleteById(UUID id) throws PostNotFoundByIdException;
 }
