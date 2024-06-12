@@ -3,7 +3,9 @@ package com.dauphine.blogger.services.impl;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.repository.CategoryRepository;
 import com.dauphine.blogger.services.CategoryService;
+import com.dauphine.blogger.services.exceptions.CategoryAlreadyExistsException;
 import com.dauphine.blogger.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.blogger.services.exceptions.CategoryNotFoundByNameException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllByName(String name) {
-        return categoryRepository.findByName(name);
+    public List<Category> getAllLikeName(String name) {
+        return categoryRepository.findAllLikeName(name);
     }
 
     public Category getById(UUID id) throws CategoryNotFoundByIdException {
@@ -35,7 +37,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category create(String name) {
+    public Category getByNameIgnoreCase(String name) throws CategoryNotFoundByNameException {
+        return categoryRepository.findByNameIgnoreCase(name).orElseThrow(() ->
+                new CategoryNotFoundByNameException("Category with name " + name + " not found"));
+    }
+
+    @Override
+    public Category create(String name) throws CategoryAlreadyExistsException {
+        if(categoryRepository.findByNameIgnoreCase(name).isPresent()) {
+            throw new CategoryAlreadyExistsException("Category with name " + name + " already exists");
+        };
         Category category = new Category(name);
         return categoryRepository.save(category);
     }

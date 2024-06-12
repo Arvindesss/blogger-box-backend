@@ -4,7 +4,9 @@ package com.dauphine.blogger.controllers;
 import com.dauphine.blogger.controllers.requestbody.CategoryRequestBody;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.services.CategoryService;
+import com.dauphine.blogger.services.exceptions.CategoryAlreadyExistsException;
 import com.dauphine.blogger.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.blogger.services.exceptions.CategoryNotFoundByNameException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +28,7 @@ public class CategoryController {
     public ResponseEntity<List<Category>> getAllCategories(@RequestParam(required = false) String name){
         List<Category> categories = name == null || name.isBlank()
                 ? categoryService.getAll()
-                : categoryService.getAllByName(name);
+                : categoryService.getAllLikeName(name);
         return ResponseEntity.ok(categories);
     }
 
@@ -36,8 +38,14 @@ public class CategoryController {
             return ResponseEntity.ok(category);
     }
 
+    @GetMapping("/name")
+    public ResponseEntity<Category> getCategoryByName(String name) throws CategoryNotFoundByNameException {
+        Category category = categoryService.getByNameIgnoreCase(name);
+        return ResponseEntity.ok(category);
+    }
+
     @PostMapping("")
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryRequestBody categoryRequestBody){
+    public ResponseEntity<Category> createCategory(@RequestBody CategoryRequestBody categoryRequestBody) throws CategoryAlreadyExistsException {
         Category category = categoryService.create(categoryRequestBody.name());
         return ResponseEntity
                 .created(URI.create("v1/categories/" + category.getId()))

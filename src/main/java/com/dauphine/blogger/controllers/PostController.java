@@ -28,7 +28,12 @@ public class PostController {
     public ResponseEntity<List<Post>> getAllPosts(@RequestParam(required = false) String value){
         List<Post> posts = value == null || value.isBlank()
                 ? postService.getAll()
-                : postService.getAllByTitleOrContent(value);
+                : postService.getAllLikeTitle(value);
+        return ResponseEntity.ok(posts);
+    }
+    @GetMapping("/desc")
+    public ResponseEntity<List<Post>> getAllPostsOrderedByCreatedDateDesc(){
+        List<Post> posts = postService.getAllOrderByCreatedDateDesc();
         return ResponseEntity.ok(posts);
     }
 

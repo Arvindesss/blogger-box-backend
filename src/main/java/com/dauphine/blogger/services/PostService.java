@@ -13,7 +13,9 @@ public interface PostService {
 
     List<Post> getAll();
 
-    List<Post> getAllByTitleOrContent(String titleOrContent);
+    List<Post> getAllOrderByCreatedDateDesc();
+
+    List<Post> getAllLikeTitle(String title);
 
     Post getById(UUID id) throws PostNotFoundByIdException;
 

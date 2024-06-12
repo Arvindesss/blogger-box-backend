@@ -2,7 +2,9 @@ package com.dauphine.blogger.services.impl;
 
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.repository.CategoryRepository;
+import com.dauphine.blogger.services.exceptions.CategoryAlreadyExistsException;
 import com.dauphine.blogger.services.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.blogger.services.exceptions.CategoryNotFoundByNameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +59,23 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void shouldCreateCategory() {
+    void shouldThrowExceptionWhenNameDoesNotExists() {
+        //Arrange
+        String name = "Not existing category";
+        when(categoryRepository.findByNameIgnoreCase(name)).thenReturn(Optional.empty());
+
+        //Act
+        CategoryNotFoundByNameException exception = assertThrows(
+                CategoryNotFoundByNameException.class,
+                () -> categoryService.getByNameIgnoreCase(name)
+        );
+
+        //Assert
+        assertEquals("Category with name " + name + " not found", exception.getMessage());
+    }
+
+    @Test
+    void shouldCreateCategory() throws CategoryAlreadyExistsException {
         //Arrange
         String name = "New Category";
         Category expected = new Category(name);
@@ -68,6 +86,23 @@ class CategoryServiceImplTest {
 
         //Assert
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldNotCreateDuplicateCategory() {
+        //Arrange
+        String name = "New Category";
+        Category expected = new Category(name);
+        when(categoryRepository.findByNameIgnoreCase(name)).thenReturn(Optional.of(expected));
+
+        //Act
+        CategoryAlreadyExistsException exception = assertThrows(
+                CategoryAlreadyExistsException.class,
+                () -> categoryService.create(name)
+        );
+
+        //Assert
+        assertEquals("Category with name " + name + " already exists", exception.getMessage());
     }
 
     @Test
