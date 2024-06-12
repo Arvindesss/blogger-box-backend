@@ -3,7 +3,9 @@ package com.dauphine.blogger.controllers;
 
 import com.dauphine.blogger.controllers.requestbody.CategoryRequestBody;
 import com.dauphine.blogger.models.Category;
+import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.services.CategoryService;
+import com.dauphine.blogger.services.PostService;
 import com.dauphine.blogger.services.exceptions.CategoryAlreadyExistsException;
 import com.dauphine.blogger.services.exceptions.CategoryNotFoundByIdException;
 import com.dauphine.blogger.services.exceptions.CategoryNotFoundByNameException;
@@ -20,8 +22,11 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryController(CategoryService categoryService) {
+    private final PostService postService;
+
+    public CategoryController(CategoryService categoryService, PostService postService) {
         this.categoryService = categoryService;
+        this.postService = postService;
     }
 
     @GetMapping("")
@@ -30,6 +35,12 @@ public class CategoryController {
                 ? categoryService.getAll()
                 : categoryService.getAllLikeName(name);
         return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/{categoryId}/posts")
+    public ResponseEntity<List<Post>> getPostsByCategoryId(@PathVariable UUID categoryId) throws CategoryNotFoundByIdException {
+        List<Post> posts = postService.getAllByCategoryId(categoryId);
+        return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/{id}")

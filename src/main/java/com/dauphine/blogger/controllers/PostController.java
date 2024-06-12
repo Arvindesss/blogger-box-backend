@@ -37,12 +37,6 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/{categoryId}")
-    public ResponseEntity<List<Post>> getPostsByCategoryId(@PathVariable UUID categoryId) throws CategoryNotFoundByIdException {
-        List<Post> posts = postService.getAllByCategoryId(categoryId);
-        return ResponseEntity.ok(posts);
-    }
-
     @PostMapping("")
     public ResponseEntity<Post> createPost(@RequestBody PostRequestBody postRequestBody)
             throws CategoryNotFoundByIdException {
